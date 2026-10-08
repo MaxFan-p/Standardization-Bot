@@ -39,7 +39,10 @@ if __name__ == "__main__":
     # double-triggers) the multi-minute Drive fetch.
     print("Loading reference specs (once, at startup)…")
     n = len(references_loader.load_reference_specs())
-    print(f"{n} reference specs loaded. Serving.")
+    print(f"{n} reference specs loaded.")
+    print("Warming Vertex context cache…")
+    review.warm_caches()
+    print("Serving.")
     # host="0.0.0.0" so a tunnel (e.g. ngrok) can reach it; port 8080 is
     # arbitrary. The debug reloader is off: it doubles memory and drops
     # in-flight requests on restart (seen as ngrok 502/503 errors).
