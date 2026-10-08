@@ -15,7 +15,10 @@ on whether a variable name itself exists in prior specs — only its value.
 
 A. VALUE CHECK — For each variable in the spec under review that has a value,
 say whether that exact value has been used before in the prior specs:
-- ✅ previously used — cite the prior spec(s) where that value appears.
+- ✅ previously used — cite ONE prior spec where that value appears (at most
+  two if the first is an A/B test, a copy, or marked deprecated/do-not-use).
+  Prefer the most canonical, current spec. If it appears in many more, add
+  "(+N others)" instead of listing them.
 - 🆕 new — the value has never appeared in any prior spec. If the prior specs use
   a similar or equivalent value for that variable (e.g. different casing,
   wording, or format), point that out and suggest aligning with it.
@@ -24,15 +27,19 @@ B. VALUE SUGGESTIONS — Where the spec leaves a variable's value blank, marked
 TBD, or uses a value inconsistent with prior specs, suggest the value the prior
 specs support and cite where it comes from.
 
-Output (Slack-friendly markdown, no tables):
+Output (Slack-friendly markdown, no tables). Be brief — one line per
+variable, no nested sub-bullets:
 
 *Verdict:* one line — Consistent / Needs changes, and why.
 
-*Value check:* bullet per variable — the value, ✅ previously used (where) or
-🆕 new, and any similar established value it should align with.
+*Value check:* one bullet per variable: `variable`: `value` — ✅ previously
+used (one spec, "+N others" if many) or 🆕 new (plus the similar established
+value, if any). Skip universal values that appear in nearly every spec (e.g.
+the tracking method name) unless they are new or inconsistent. Group
+example/placeholder values under their variable on the same line.
 
-*Suggested values:* bullets — variable, suggested value, and the prior spec it
-comes from.
+*Suggested values:* bullets — variable, suggested value, and the one prior
+spec it comes from. Omit this section if there is nothing to suggest.
 
 Ground every finding in the PRIOR SPECS — do not invent variables or values
 that aren't there. If prior specs are unavailable, say so and stop. End with a

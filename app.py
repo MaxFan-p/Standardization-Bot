@@ -20,6 +20,10 @@ def main():
     print("Loading reference specs (once, at startup)…")
     n = len(references_loader.load_reference_specs())
     print(f"{n} reference specs loaded.")
+    from compliance import review
+
+    print("Warming Vertex context cache…")
+    review.warm_caches()
     app = build_app()
     handler = SocketModeHandler(app, config.SLACK_APP_TOKEN)
     print("Privacy specs bot is running (Socket Mode). Ctrl-C to stop.")

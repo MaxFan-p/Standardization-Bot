@@ -15,6 +15,19 @@ GOOGLE_CLOUD_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "i-digmops")
 GOOGLE_CLOUD_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
+# Latency knobs.
+# Thinking budget: 0 disables Gemini 2.5's internal "thinking" (fastest; fine
+# for grounded lookups). Set e.g. 1024 for a little reasoning, -1 for dynamic.
+GEMINI_THINKING_BUDGET = int(os.environ.get("GEMINI_THINKING_BUDGET", "0"))
+# Hard cap on reply length; the prompts ask for a compact format anyway.
+GEMINI_MAX_OUTPUT_TOKENS = int(os.environ.get("GEMINI_MAX_OUTPUT_TOKENS", "4096"))
+# Vertex context caching: upload the grounding material (prior specs,
+# OneTrust page) once and reference it by ID, so each request only sends the
+# spec under review instead of re-sending every prior spec. Falls back to
+# inline grounding automatically if caching fails.
+GEMINI_USE_CONTEXT_CACHE = os.environ.get("GEMINI_USE_CONTEXT_CACHE", "1") not in ("0", "false", "False")
+GEMINI_CACHE_TTL_SECONDS = int(os.environ.get("GEMINI_CACHE_TTL_SECONDS", str(6 * 3600)))
+
 # --- Reference material ---
 # Prior specs live in a Google Drive folder, read directly via the Drive API
 # (no Drive-for-desktop sync needed). Set GDRIVE_FOLDER_ID (from the folder's

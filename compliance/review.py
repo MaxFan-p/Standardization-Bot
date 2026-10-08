@@ -31,6 +31,7 @@ def spec_check(spec_part):
         grounding_parts=refs,
         instruction=SPEC_CHECK_INSTRUCTION,
         system_instruction=SPEC_CHECK_SYSTEM_PROMPT,
+        cache_key="prior_specs",
     )
 
 
@@ -46,4 +47,32 @@ def vendor_check(vendors_text: str):
         instruction=VENDOR_CHECK_INSTRUCTION,
         system_instruction=VENDOR_CHECK_SYSTEM_PROMPT,
         subject_header="VENDORS REQUESTED",
+        cache_key="onetrust_vendors",
     )
+
+
+def warm_caches():
+    """Create the Vertex context caches up front so the first real request
+    doesn't pay for it. Safe to call when caching is disabled (no-op)."""
+    import logging
+
+    log = logging.getLogger(__name__)
+    try:
+        refs = references_loader.load_reference_specs()
+        if refs:
+            gemini_client.warm_cache(
+                "prior_specs",
+                "PRIOR SPECS (source of truth for variable names and values)",
+                refs,
+                SPEC_CHECK_SYSTEM_PROMPT,
+            )
+        page = references_loader.load_onetrust_vendors()
+        if page:
+            gemini_client.warm_cache(
+                "onetrust_vendors",
+                "ONETRUST 3RD-PARTY VENDORS (authoritative, from Confluence; HTML)",
+                [page],
+                VENDOR_CHECK_SYSTEM_PROMPT,
+            )
+    except Exception:  # noqa: BLE001
+        log.exception("Cache warm-up failed; caches will be created on first request.")

@@ -34,6 +34,16 @@ Each check is independent and grounded only in its own source material.
 Reference material is cached in memory — restart the bot to pick up new Drive
 files or an updated Confluence page.
 
+**Latency.** The first review after startup uploads the grounding material to
+a [Vertex context cache](https://cloud.google.com/vertex-ai/generative-ai/docs/context-cache/context-cache-overview)
+(takes roughly as long as one old-style review). Every review after that sends
+only the spec under review and references the cache by ID, so Gemini doesn't
+re-read every prior spec each time. The cache expires after
+`GEMINI_CACHE_TTL_SECONDS` (default 6h) and is recreated on the next request;
+if caching is unavailable the bot silently falls back to inline grounding.
+Gemini's internal "thinking" is off by default (`GEMINI_THINKING_BUDGET=0`),
+which is the other big time saver for this kind of lookup task.
+
 ## Prerequisites
 
 - Python 3.10+
@@ -78,6 +88,11 @@ SLACK_APP_TOKEN=xapp-...
 GOOGLE_CLOUD_PROJECT=i-digmops
 GOOGLE_CLOUD_LOCATION=us-central1
 GEMINI_MODEL=gemini-2.5-flash
+# Latency: 0 disables Gemini 2.5 "thinking" (fastest); context caching uploads
+# the prior specs to Vertex once so each review only sends the spec itself.
+GEMINI_THINKING_BUDGET=0
+GEMINI_USE_CONTEXT_CACHE=1
+GEMINI_CACHE_TTL_SECONDS=21600
 
 # Prior specs — Google Drive folder. Set the folder ID (from the folder URL:
 # .../folders/<ID>) or leave blank to look it up by name.
